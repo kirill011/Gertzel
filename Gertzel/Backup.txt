@@ -1,0 +1,224 @@
+//#include "dspl.h"
+//#include "C://libdspl-2-0-code-8ed86c88c705e48559bc11dd0d6de43b517265a8/dspl/src/dft/goertzel.c"
+
+#define FS   8000.0
+#define ERROR_SIZE                            0x19092605
+#define ERROR_PTR                             0x16201800
+#define DSPL_SYMMETRIC                        0x00000000
+#define DSPL_PERIODIC                         0x00000001
+#define ERROR_SYM_TYPE                        0x19251320
+#define ERROR_FNAME                           0x06140113
+#define ERROR_INF                             0x09140600
+#define ERROR_NAN                             0x14011400
+#define ERROR_FOPEN                           0x06151605
+#define M_2PI       6.283185307179586476925286766559
+#define RES_OK                                0
+#define RE(x) (x[0])
+#define IM(x) (x[1])
+#define ABS(x)          sqrt((ABSSQR(x)))
+#define ABSSQR(x) ((SQR(RE(x))) + (SQR(IM(x))))
+#define SQR(x) ((x) * (x))
+//#define N    205
+
+//using namespace audiere;
+using namespace sf;
+
+typedef double complex_t[2];
+
+int writetxt(double* x, double* y, int n, char* fn)
+{
+    int k, err;
+    FILE* pFile = NULL;
+    if (!x)
+        return ERROR_PTR;
+    if (n < 1)
+        return ERROR_SIZE;
+    if (!fn)
+        return ERROR_FNAME;
+
+    pFile = fopen(fn, "w+");
+    if (pFile == NULL)
+        return ERROR_FOPEN;
+
+    if (y)
+    {
+        for (k = 0; k < n; k++)
+        {
+            if (isnan(x[k]) || isnan(y[k]))
+            {
+                err = ERROR_NAN;
+                goto exit_label;
+            }
+            if (isinf(x[k]) || isinf(y[k]))
+            {
+                err = ERROR_INF;
+                goto exit_label;
+            }
+            fprintf(pFile, "%+.12E\t%+.12E\n", x[k], y[k]);
+        }
+    }
+    else
+    {
+        for (k = 0; k < n; k++)
+        {
+            if (isnan(x[k]))
+            {
+                err = ERROR_NAN;
+                goto exit_label;
+            }
+            if (isinf(x[k]))
+            {
+                err = ERROR_INF;
+                goto exit_label;
+            }
+            fprintf(pFile, "%+.12E\n", x[k]);
+        }
+    }
+    err = RES_OK;
+exit_label:
+    fclose(pFile);
+    return err;
+}
+
+
+int goertzel(double* x, int n, int* ind, int k, complex_t* y)
+{
+
+    int m, p;
+    double wR, wI;
+    double alpha;
+    double v[3];
+
+    if (!x || !y || !ind)
+        return ERROR_PTR;
+
+    if (n < 1 || k < 1)
+        return ERROR_SIZE;
+
+    for (p = 0; p < k; p++)
+    {
+        wR = cos(M_2PI * (double)ind[p] / (double)n);
+        wI = sin(M_2PI * (double)ind[p] / (double)n);
+
+        alpha = 2.0 * wR;
+        v[0] = v[1] = v[2] = 0.0;
+
+        for (m = 0; m < n; m++)
+        {
+            v[2] = v[1];
+            v[1] = v[0];
+            v[0] = x[m] + alpha * v[1] - v[2];
+        }
+        RE(y[p]) = wR * v[0] - v[1];
+        IM(y[p]) = wI * v[0];
+    }
+    return RES_OK;
+}
+
+int linspace(double x0, double x1, int n, int type, double* x)
+{
+    double dx;
+    int k;
+
+    if (n < 2)
+        return ERROR_SIZE;
+    if (!x)
+        return ERROR_PTR;
+
+    switch (type)
+    {
+    case DSPL_SYMMETRIC:
+        dx = (x1 - x0) / (double)(n - 1);
+        x[0] = x0;
+        for (k = 1; k < n; k++)
+            x[k] = x[k - 1] + dx;
+        break;
+    case DSPL_PERIODIC:
+        dx = (x1 - x0) / (double)n;
+        x[0] = x0;
+        for (k = 1; k < n; k++)
+            x[k] = x[k - 1] + dx;
+        break;
+    default:
+        return ERROR_SYM_TYPE;
+    }
+    return RES_OK;
+}
+
+
+void scale_data(double* x, double* y, int n,
+    double xmin, double xmax,
+    double ymin, double ymax,
+    double w, double h)
+{
+    double kx = w / (xmax - xmin);
+    double ky = h / (ymax - ymin);
+
+    int k;
+
+    for (k = 0; k < n; k++)
+    {
+        x[k] = (x[k] - xmin) * kx;
+        y[k] = (y[k] - ymin) * ky;
+    }
+}
+
+
+void geryz(const sf::Int16* signal, int N) {
+    double* t = (double*)malloc(sizeof(double)* N);              /* время                      */
+    double* s = (double*)malloc(sizeof(double) * N);              /* исходный сигнал            */
+    for (int i = 0; i < N; i++)
+        s[i] = (double)signal[i];
+    void* hdspl; /* DSPL handle        */
+    void* hplot; /* GNUPLOT handle     */
+
+    complex_t* cS = (complex_t*)malloc(sizeof(complex_t) * N);
+    double* rS = (double*)malloc(sizeof(double) * N);
+
+    double frq[8] = { 697.0, 770.0, 852.0, 941.0, 1209.0, 1336.0, 1477.0, 1633.0 };
+    int    ind[8] = { 18,    20,    22,    24,     31,     34,     38,     42 };
+    char   smb[17] = "123a456b789cs0rd";
+    double frq8[8];
+    int k, m, n;
+    char fname[64] = "save_data.txt";  /* имя файла для сохранения рассчитанных данных */
+
+
+    /* Загружаем libdspl.dll */
+    //hdspl = dspl_load();
+ /*   if (!hdspl)
+    {
+        printf("Cannot to load libdspl!\n");
+    }*/
+
+    FILE* file = fopen(fname, "a+t");
+
+    for (k = 0; k < 4; k++)
+    {
+        for (m = 0; m < 4; m++)
+        {
+            linspace(0, (double)N / FS, N, DSPL_PERIODIC, t);
+            for (n = 0; n < N; n++)
+            {
+                s[n] = sin(M_2PI * frq[k] * t[n]) + sin(M_2PI * frq[m + 4] * t[n]);
+            }
+            goertzel(s, N, ind, 8, cS);
+            for (n = 0; n < 8; n++)
+                rS[n] = ABS(cS[n]);
+            scale_data(t, s, N, 0.0, t[N - 1], -2.0, 2.0, 4.5, 2.0);
+            memcpy(frq8, frq, 8 * sizeof(double));
+            scale_data(frq8, rS, 8, 500.0, 1800.0, 0.0, 120.0, 4.5, 2.0);
+            fprintf(file, "dtmf_sym_%c_time.txt", smb[k * 4 + m]);
+            writetxt(t, s, N, fname);
+            fprintf(file, "dtmf_sym_%c_freq.txt", smb[k * 4 + m]);
+            writetxt(frq8, rS, 8, fname);
+            printf("%c", smb[k * 4 + m]);
+        }
+    }
+
+
+
+
+    /* Выгружаем libdspl.dll из памяти */
+   // dspl_free(hdspl);
+
+}

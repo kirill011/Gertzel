@@ -1,0 +1,4 @@
+﻿  Gertzel.cpp
+C:\Users\kiril\source\repos\Gertzel\Gertzel\Gertzel.cpp(121,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\Users\kiril\source\repos\Gertzel\Gertzel\Gertzel.cpp(136,21): warning C4244: инициализация: преобразование "sf::Uint64" в "int", возможна потеря данных
+  Gertzel.vcxproj -> C:\Users\kiril\source\repos\Gertzel\x64\Debug\Gertzel.exe

@@ -1,0 +1,9 @@
++6.819230769231E-01	+3.254136327215E-02
++9.346153846154E-01	+3.255528231385E-02
++1.218461538462E+00	+3.257068382874E-02
++1.526538461538E+00	+3.258757305063E-02
++2.454230769231E+00	+3.265848880695E-02
++2.893846153846E+00	+3.269455454043E-02
++3.381923076923E+00	+3.274800332780E-02
++3.921923076923E+00	+3.280764769299E-02
+dat/dtmf_sym_1_time.txtdat/dtmf_sym_1_freq.txtdat/dtmf_sym_2_time.txtdat/dtmf_sym_2_freq.txtdat/dtmf_sym_3_time.txtdat/dtmf_sym_3_freq.txtdat/dtmf_sym_a_time.txtdat/dtmf_sym_a_freq.txtdat/dtmf_sym_4_time.txtdat/dtmf_sym_4_freq.txtdat/dtmf_sym_5_time.txtdat/dtmf_sym_5_freq.txtdat/dtmf_sym_6_time.txtdat/dtmf_sym_6_freq.txtdat/dtmf_sym_b_time.txtdat/dtmf_sym_b_freq.txtdat/dtmf_sym_7_time.txtdat/dtmf_sym_7_freq.txtdat/dtmf_sym_8_time.txtdat/dtmf_sym_8_freq.txtdat/dtmf_sym_9_time.txtdat/dtmf_sym_9_freq.txtdat/dtmf_sym_c_time.txtdat/dtmf_sym_c_freq.txtdat/dtmf_sym_s_time.txtdat/dtmf_sym_s_freq.txtdat/dtmf_sym_0_time.txtdat/dtmf_sym_0_freq.txtdat/dtmf_sym_r_time.txtdat/dtmf_sym_r_freq.txtdat/dtmf_sym_d_time.txtdat/dtmf_sym_d_freq.txt

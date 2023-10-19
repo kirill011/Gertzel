@@ -1,0 +1,6 @@
+﻿Gertzel.obj : error LNK2019: ссылка на неразрешенный внешний символ "void * __cdecl dspl_load(void)" (?dspl_load@@YAPAXXZ) в функции "void __cdecl geryz(short const *,int)" (?geryz@@YAXPBFH@Z).
+Gertzel.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl dspl_free(void *)" (?dspl_free@@YAXPAX@Z) в функции "void __cdecl geryz(short const *,int)" (?geryz@@YAXPBFH@Z).
+Gertzel.obj : error LNK2001: неразрешенный внешний символ _goertzel.
+Gertzel.obj : error LNK2001: неразрешенный внешний символ _linspace.
+Gertzel.obj : error LNK2001: неразрешенный внешний символ _writetxt.
+C:\Users\kiril\source\repos\Gertzel\Debug\Gertzel.exe : fatal error LNK1120: неразрешенных внешних элементов: 5
